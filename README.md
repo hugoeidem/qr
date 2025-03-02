@@ -2,6 +2,8 @@
 
 An ongoing project to read and generate QR codes **without external libraries** like `qrcode` or `reedsolo`. Currently supports decoding QR codes from `.png` images. QR generation is in development.  
 
+Make sure python is installed!
+
 ## Installation & Usage  
 1. **Clone the repository:**  
    ```bash
@@ -16,12 +18,18 @@ An ongoing project to read and generate QR codes **without external libraries** 
    ```bash
    python qr_main.py samples/hello_world.png
    ```
+   Expected result:
+   ```
    Message: HELLO WORLD
-4. **Enable verbose mode (optional)**:
+   ```
+5. **Enable verbose mode (optional)**:
    
    Adding 1 at the end provides additional debug info:
    ```bash
    python qr_main.py samples/hello_world.png 1
+   ```
+   Expected result:
+   ```
    Version: 1
    Level: L
    Mask: 0
