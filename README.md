@@ -14,9 +14,9 @@ An ongoing project to read and generate QR codes **without external libraries** 
    ```
 3. **Run the program:**
    ```bash
-   python qr_main samples/hello_world.png
-   Message: HELLO WORLD
+   python qr_main.py samples/hello_world.png
    ```
+   Message: HELLO WORLD
 4. **Enable verbose mode (optional)**:
    
    Adding 1 at the end provides additional debug info:
