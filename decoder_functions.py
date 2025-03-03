@@ -46,8 +46,6 @@ def byte_decoder(br: "Basic_reader"):
                 print("it failed!")
     
 
-
-
 def alphanumeric_decoder(br: "Basic_reader"):
 
     char_count_ind_length = CHARACTER_COUNT_LENGTH[0b0010][br.version]
@@ -139,13 +137,25 @@ def checkForCorruption(br: "Basic_reader"):
         i += 1
 
     br.resetPos()
+    isValid = True
 
     for i in range(block_count):
         ecc = block_info[1] - block_info[2] if i < block_info[0] else block_info[4] - block_info[5]
 
         if rsBytes(dblocks[i], ecc) != eblocks[i]:
-            return False
-    return True
+            isValid = False
+
+    # Reverse block-interleaving and reorder the bitstream
+    data = []
+
+    for block in dblocks + eblocks:
+        for byte in block:
+            data += bitlistFromBinary(byte, 8)
+
+    br.data = data
+    return isValid
+
+
 
 
 def kanji_decoder(br: "Basic_reader"):

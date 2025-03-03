@@ -22,6 +22,7 @@ class Basic_reader(BaseQRProcessor):
         self.codepage = "utf-8"
         self.bytes_read = 0
         self.bits_read = 0
+        self.data = None
         
         super().__init__(self.version, self.grid)
 
@@ -122,19 +123,21 @@ class Basic_reader(BaseQRProcessor):
 
 
     def resetPos(self):
-        self.bits_read = 0 
+        self.bits_read = -1
         self.bytes_read = 0
         super().resetPos()
 
 
     def readBit(self):
-        r, c = self.getNext()
 
-        # TODO remove debugging
         self.bits_read += 1
-        if self.bits_read%8 == 0: self.bytes_read += 1; #print(self.bytes_read)
 
-        return self.grid[r][c]
+        if self.data:
+            return self.data[self.bits_read]
+        
+        else:
+            r, c = self.getNext()
+            return self.grid[r][c]
 
 
     def readBits(self, n: int):
@@ -245,7 +248,7 @@ class Basic_reader(BaseQRProcessor):
                     # raise ValueError(f"Cant find decoder for encoding mode: {bin(self.enc_mode)}")
                 
         if self.show_info: print()
-        print("message:", "".join(message))
+        print("Message:", "".join(message))
 
 
 # TODO  1000 (Kanji) – Used for efficient encoding of Shift JIS characters, relevant for Japanese text.
