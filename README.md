@@ -27,9 +27,9 @@ Make sure python is installed!
    ```
 5. **Enable verbose mode (optional)**:
    
-   Adding 1 at the end provides additional debug info:
+   Adding -v provides additional info:
    ```bash
-   python qr_main.py samples/hello_world.png 1
+   python qr_main.py samples/hello_world.png -v
    ```
    Expected result:
    ```
