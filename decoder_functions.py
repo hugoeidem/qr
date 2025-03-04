@@ -21,8 +21,9 @@ def ECI_decoder(br: "Basic_reader"):
     br.codepage = ECI_codes[id] # example codepage, id 26 = 'utf-8'
 
     if br.show_info:
-        print("CODEPAGE ID:", id)
-        print("CHANGING CODE PAGE TO:", ECI_codes[id])
+        print("ECI_decoder")
+        print("Changing codepage to:", ECI_codes[id])
+        print()
 
 
 def byte_decoder(br: "Basic_reader"):
@@ -107,36 +108,24 @@ def checkForCorruption(br: "Basic_reader"):
 
     if br.show_info:
         print("block_info:", block_info)
+        print()
 
     if 3 == len(block_info):
         block_info = block_info + (0, 0, 0)
 
     block_count = block_info[0] + block_info[3]
-    dblocks = [[] for _ in range(block_count)]
-    eblocks = [[] for _ in range(block_count)]
-    dcounts = [block_info[2] for _ in range(block_info[0])] + [block_info[5] for _ in range(block_info[3])]
-    ecounts = [block_info[1]-block_info[2] for _ in range(block_info[0])] + \
+
+    d_sizes = [block_info[2] for _ in range(block_info[0])] + \
+              [block_info[5] for _ in range(block_info[3])]
+    
+    e_sizes = [block_info[1]-block_info[2] for _ in range(block_info[0])] + \
               [block_info[4]-block_info[5] for _ in range(block_info[3])]
 
-    i = 0
-    indices = list(range(block_count))
-    for _ in range(sum(dcounts)):
-        index = indices[i%len(indices)]
-        dblocks[index].append(br.readByte())
-        dcounts[index] -= 1
-        if dcounts[index] == 0: indices.remove(index)
-        i += 1
-
-    i = 0
-    indices = list(range(block_count))
-    for _ in range(sum(ecounts)):
-        index = indices[i%len(indices)]
-        eblocks[index].append(br.readByte())
-        ecounts[index] -= 1
-        if ecounts[index] == 0: indices.remove(index)
-        i += 1
+    dblocks = deinterleave(br, d_sizes)
+    eblocks = deinterleave(br, e_sizes)
 
     br.resetPos()
+
     isValid = True
 
     for i in range(block_count):
@@ -154,6 +143,24 @@ def checkForCorruption(br: "Basic_reader"):
 
     br.data = data
     return isValid
+
+
+def deinterleave(br: "Basic_reader", block_sizes) -> list:
+
+    block_count = len(block_sizes)
+    out = [[] for _ in range(block_count)]
+
+    for i in range(min(block_sizes)):
+        for b in range(block_count):
+            out[b].append(br.readByte())
+
+    if min(block_sizes) != max(block_sizes):
+        indices = [j for j in range(block_count) if block_sizes[j] == max(block_sizes)]
+        for _ in range(i+1, max(block_sizes)):
+            for b in indices:
+                out[b].append(br.readByte())
+                
+    return out  
 
 
 

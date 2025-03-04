@@ -94,6 +94,8 @@ class Basic_reader(BaseQRProcessor):
             diff = rows[i+1] - rows[i]
             if diff > row_median_diff*1.3:
                 rows.insert(i+1, rows[i+1]-row_median_diff)
+            elif diff < row_median_diff*0.7:
+                rows.remove(rows[i])
             else:
                 i += 1
         i = 0
@@ -101,6 +103,8 @@ class Basic_reader(BaseQRProcessor):
             diff = cols[i+1] - cols[i]
             if diff > col_median_diff*1.3:
                 cols.insert(i+1, cols[i+1]-col_median_diff)
+            elif diff < col_median_diff*0.7:
+                cols.remove(cols[i])
             else:
                 i += 1
 
@@ -226,7 +230,7 @@ class Basic_reader(BaseQRProcessor):
         while enc_mode != 0b0000: # terminator
             enc_mode = self.readBits(4)
             if self.show_info:
-                print(f"Read mode bits: {bin(enc_mode)} at bit position {self.bits_read}")
+                print(f"Read enc-mode: {bin(enc_mode)} at bit position {self.bits_read}\n")
 
             match enc_mode:
                 case 0b0001: # numeric
@@ -248,7 +252,8 @@ class Basic_reader(BaseQRProcessor):
                     # raise ValueError(f"Cant find decoder for encoding mode: {bin(self.enc_mode)}")
                 
         if self.show_info: print()
-        print("Message:", "".join(message))
+        print("Message:")
+        print("".join(segment.replace("\r", "\n") for segment in message))
 
 
 # TODO  1000 (Kanji) – Used for efficient encoding of Shift JIS characters, relevant for Japanese text.

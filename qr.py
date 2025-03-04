@@ -22,7 +22,7 @@ def main():
             if ".png" not in filename:
                 print("File is not a .png!\n")
                 sys.exit(1)
-    
+                
     Basic_reader(filename, show_info).decode()
 
 
